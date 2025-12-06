@@ -1,10 +1,14 @@
-body { font-family: sans-serif; max-width: 500px; margin: auto; padding: 10px; }
-form, #posts { margin-bottom: 20px; }
-input, select, textarea { display: block; margin: 5px 0 10px 0; width: 100%; }
-.post { border: 1px solid #bbb; padding: 10px; margin-bottom: 10px; background: #f9f9f9; }
-
-
-
-.container {
-  display: flex;
+.post-card {
+    border: 1px solid #bbb;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    background: #fdfdfd;
+    box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+}
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-bottom: 5px;
 }
