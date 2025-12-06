@@ -56,7 +56,30 @@
                     <label>Description:</label>
                     <textarea id="description" rows="4" placeholder="Provide details..." required></textarea>
                 </div>
+                <script>
+                (function(){
+                    const typeSelect = document.getElementById('type');
+                    const titleInput = document.getElementById('title');
 
+                    function updateTitlePlaceholder() {
+                        if (!typeSelect || !titleInput) return;
+                        const label = titleInput.previousElementSibling;
+                        if (typeSelect.value === 'lost') {
+                            titleInput.placeholder = 'Name the item(s) you lost';
+                            if (label) label.textContent = 'Item Name:';
+                        } else if (typeSelect.value === 'found') {
+                            titleInput.placeholder = 'Name the item(s) you found';
+                            if (label) label.textContent = 'Item Name:';
+                        } else {
+                            titleInput.placeholder = 'e.g., Need a plumber';
+                            if (label) label.textContent = 'Title:';
+                        }
+                    }
+
+                    document.addEventListener('DOMContentLoaded', updateTitlePlaceholder);
+                    typeSelect && typeSelect.addEventListener('change', updateTitlePlaceholder);
+                })();
+                </script>
                 <div class="form-group">
                     <label>Your Name:</label>
                     <input type="text" id="contactName" placeholder="John Doe" required>
