@@ -6,24 +6,21 @@
     <title>Community Help & Lost+Found</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-     
 </head>
 <body>
 
-    <!-- LOGIN/SIGNUP MODAL -->
+    <!-- login page -->
     <div id="authModal" class="modal">
         <div class="modal-content">
-            <h2 id="authTitle">🔐 Login to Continue</h2>
+            <h2 id="authTitle"> Login</h2>
             <p class="auth-subtitle">Connect with your local community</p>
             
             <form id="authForm">
-                <!-- NAME FIELDS (Only shown during signup) -->
                 <div id="nameFields" style="display: none;">
                     <div class="form-group">
                         <label>First Name:</label>
                         <input type="text" id="firstName" placeholder="John">
                     </div>
-
                     <div class="form-group">
                         <label>Last Name:</label>
                         <input type="text" id="lastName" placeholder="Doe">
@@ -40,39 +37,44 @@
                     <input type="password" id="authPassword" placeholder="Min 6 characters" required>
                 </div>
 
-                <button type="submit" class="btn-auth" id="authSubmitBtn">Login</button>
+                <button type="submit" class="btn-auth" id="authsubbth">Login</button>
             </form>
 
             <p class="auth-toggle">
-                <span id="authToggleText">Don't have an account?</span>
-                <a href="#" id="authToggleLink">Sign Up</a>
+                <span id="att">Don't have an account?</span>
+                <a href="#" id="authtolink">Sign Up</a>
             </p>
         </div>
     </div>
 
     <div class="container" id="mainApp" style="display: none;">
-        <!-- USER INFO BAR -->
         <div class="user-bar">
             <span id="userInfo">Loading...</span>
-            <button id="logoutBtn" class="btn-logout">🚪 Logout</button>
+            <button id="logoutBtn" class="btn-logout"> Logout</button>
         </div>
 
-        <!-- HEADER -->
         <header>
-            <h1>🤝 Community Help & Lost+Found</h1>
+            <h1> Community Help & Lost+Found</h1>
             <p>Connect with your local community</p>
         </header>
+        <section class="create-post-section" style="padding: 20px; text-align: center;  border-radius: 8px; margin-bottom: 20px;">
+            <button id="createPostBtn" class="btn-create-post"> Create a Post</button>
+        </section>
+        
 
-        <!-- CREATE POST FORM -->
-        <section class="form-section">
-            <h2>Create a Post</h2>
+        <!-- for creating post -->
+        <section class="form-section" id="formSection" style="display: none;">
+            <div class="form-header">
+                <h2>Create New Post</h2>
+                <button type="button" class="btn-close" id="closeFormBtn" style="float: right; background-color: transparent; border: none; color: #666; font-size: 18px; cursor: pointer;">✕</button>
+            </div>
             <form id="postForm">
                 <div class="form-group">
                     <label>Post Type:</label>
                     <select id="type" required>
-                        <option value="help-needed">🆘 Help Needed</option>
-                        <option value="lost">😢 Lost Item</option>
-                        <option value="found">🎉 Found Item</option>
+                        <option value="help-needed"> Help Needed</option>
+                        <option value="lost"> Lost Item</option>
+                        <option value="found"> Found Item</option>
                     </select>
                 </div>
 
@@ -89,6 +91,18 @@
                         <option value="Ward 8">Ward 8</option>
                         <option value="Ward 9">Ward 9</option>
                         <option value="Ward 10">Ward 10</option>
+                        <option value="Ward 11">Ward 11</option>
+                        <option value="Ward 12">Ward 12</option>
+                        <option value="Ward 13">Ward 13</option>
+                        <option value="Ward 14">Ward 14</option>
+                        <option value="Ward 15">Ward 15</option>
+                        <option value="Ward 16">Ward 16</option>
+                        <option value="Ward 17">Ward 17</option>
+                        <option value="Ward 18">Ward 18</option>
+                        <option value="Ward 19">Ward 19</option>
+                        <option value="Ward 20">Ward 20</option>
+                        <option value="Ward 21">Ward 21</option>
+                        <option value="Ward 22">Ward 22</option>
                     </select>
                 </div>
 
@@ -112,19 +126,19 @@
                     <input type="tel" id="contactPhone" placeholder="9876543210" required>
                 </div>
 
-                <button type="submit" class="btn-submit">📤 Post</button>
+                <button type="submit" class="btn-submit"> Post</button>
             </form>
         </section>
 
-        <!-- FILTER SECTION -->
+        <!-- Filtering code  -->
         <section class="filter-section">
             <h2>Browse Posts</h2>
             <div class="filters">
                 <select id="filterType">
                     <option value="all">All Types</option>
-                    <option value="help-needed">🆘 Help Needed</option>
-                    <option value="lost">😢 Lost</option>
-                    <option value="found">🎉 Found</option>
+                    <option value="help-needed">Help Needed</option>
+                    <option value="lost"> Lost</option>
+                    <option value="found"> Found</option>
                 </select>
 
                 <select id="filterArea">
@@ -134,22 +148,47 @@
                     <option value="Ward 3">Ward 3</option>
                     <option value="Ward 4">Ward 4</option>
                     <option value="Ward 5">Ward 5</option>
+                    <option value="Ward 6">Ward 6</option>
+                    <option value="Ward 7">Ward 7</option>
+                    <option value="Ward 8">Ward 8</option>
+                    <option value="Ward 9">Ward 9</option>
+                    <option value="Ward 10">Ward 10</option>
+                    <option value="Ward 11">Ward 11</option>
+                    <option value="Ward 12">Ward 12</option>
+                    <option value="Ward 13">Ward 13</option>
+                    <option value="Ward 14">Ward 14</option>
+                    <option value="Ward 15">Ward 15</option>
+                    <option value="Ward 16">Ward 16</option>
+                    <option value="Ward 17">Ward 17</option>
+                    <option value="Ward 18">Ward 18</option>
+                    <option value="Ward 19">Ward 19</option>
+                    <option value="Ward 20">Ward 20</option>
+                    <option value="Ward 21">Ward 21</option>
+                    <option value="Ward 22">Ward 22</option>
                 </select>
 
                 <button id="applyFilter" class="btn-filter">🔍 Filter</button>
             </div>
         </section>
 
-        <!-- POSTS DISPLAY -->
+        <!-- Showing posts  -->
         <section class="posts-section">
             <div id="postsContainer">
                 <p class="loading">Loading posts...</p>
             </div>
         </section>
     </div>
-<script>
-    
-</script>
+
+    <script>
+        // toggle create post form
+        document.getElementById('createPostBtn').addEventListener('click', () => {
+            document.getElementById('formSection').style.display = 'block';
+        });
+
+        document.getElementById('closeFormBtn').addEventListener('click', () => {
+            document.getElementById('formSection').style.display = 'none';
+        });
+    </script>
     <script type="module" src="app.js"></script>
 </body>
 </html>
