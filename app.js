@@ -3,6 +3,7 @@ import {
   getFirestore,
   collection,
   addDoc,
+  getDocs,  // ⬅️ ADDED: You were using this but didn't import it!
   query,
   orderBy,
   serverTimestamp,
@@ -30,13 +31,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterTypeSelect = document.getElementById('filterType');
     const filterAreaSelect = document.getElementById('filterArea');
     const applyFilterBtn = document.getElementById('applyFilter');
-
+    const form=document.getElementById('form-section');
+    const btn=document.getElementById('btn');
+  const closeFormBtn=document.getElementById('closeForm');
+    closeFormBtn.addEventListener('click',()=>{
+        postForm.style.display="none";
+    });
+    //form-status
+    postForm.style.display="none";
+btn.addEventListener('click',()=>{
+   postForm.style.display="block";
+});
+    // Store filter state
     let currentFilterType = 'all';
     let currentFilterArea = 'all';
+    
+    // Store all posts for filtering
+    let allPosts = [];
 
     // -------- SUBMIT POST --------
     postForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        const submitBtn = postForm.querySelector('.btn-submit');
+        submitBtn.disabled = true;
+        submitBtn.textContent = '⏳ Posting...';
+        
         const type = document.getElementById('type').value;
         const area = document.getElementById('area').value;
         const title = document.getElementById('title').value;
@@ -54,11 +74,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 contactPhone: contactPhone,
                 timestamp: serverTimestamp()
             });
+            
             alert('✅ Post created successfully!');
             postForm.reset();
+            
         } catch (error) {
             console.error('Error adding post:', error);
-            alert('❌ Failed to create post. Check console.');
+            alert('❌ Failed to create post: ' + error.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = '📤 Post';
         }
     });
 
@@ -66,49 +91,63 @@ document.addEventListener('DOMContentLoaded', () => {
     applyFilterBtn.addEventListener('click', () => {
         currentFilterType = filterTypeSelect.value;
         currentFilterArea = filterAreaSelect.value;
-        renderPosts();
+        console.log('Filters applied:', currentFilterType, currentFilterArea);
+        renderFilteredPosts();
     });
 
-    // -------- REALTIME POSTS --------
+    // -------- REALTIME LISTENER --------
     const postsQuery = query(collection(db, 'posts'), orderBy('timestamp', 'desc'));
-    onSnapshot(postsQuery, () => {
-        renderPosts();
+    
+    onSnapshot(postsQuery, (snapshot) => {
+        console.log('📡 Real-time update received');
+        allPosts = []; // Clear array
+        
+        snapshot.forEach((doc) => {
+            allPosts.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+        
+        renderFilteredPosts();
+    }, (error) => {
+        console.error('Error in real-time listener:', error);
+        postsContainer.innerHTML = '<p class="loading">❌ Connection error. Refresh page.</p>';
     });
 
-    // -------- FUNCTION TO RENDER POSTS --------
-    async function renderPosts() {
-        postsContainer.innerHTML = '<p class="loading">Loading posts...</p>';
-        try {
-            const snapshot = await getDocs(postsQuery);
-            postsContainer.innerHTML = '';
-            if (snapshot.empty) {
-                postsContainer.innerHTML = '<p class="loading">No posts yet. Be the first to post!</p>';
-                return;
-            }
-
-            let hasPosts = false;
-            snapshot.forEach((doc) => {
-                const post = doc.data();
-                if (currentFilterType !== 'all' && post.type !== currentFilterType) return;
-                if (currentFilterArea !== 'all' && post.area !== currentFilterArea) return;
-                displayPost(post);
-                hasPosts = true;
-            });
-
-            if (!hasPosts) {
-                postsContainer.innerHTML = '<p class="loading">No posts match your filters.</p>';
-            }
-        } catch (error) {
-            console.error('Error loading posts:', error);
-            postsContainer.innerHTML = '<p class="loading">❌ Error loading posts. Check console.</p>';
+    // -------- RENDER WITH FILTERS --------
+    function renderFilteredPosts() {
+        postsContainer.innerHTML = '';
+        
+        if (allPosts.length === 0) {
+            postsContainer.innerHTML = '<p class="loading">No posts yet. Be the first to post!</p>';
+            return;
         }
+
+        // Apply filters
+        const filteredPosts = allPosts.filter(post => {
+            const typeMatch = currentFilterType === 'all' || post.type === currentFilterType;
+            const areaMatch = currentFilterArea === 'all' || post.area === currentFilterArea;
+            return typeMatch && areaMatch;
+        });
+
+        if (filteredPosts.length === 0) {
+            postsContainer.innerHTML = '<p class="loading">No posts match your filters. Try different options.</p>';
+            return;
+        }
+
+        // Display filtered posts
+        filteredPosts.forEach(post => {
+            displayPost(post);
+        });
+        
+        console.log(`Showing ${filteredPosts.length} of ${allPosts.length} posts`);
     }
 
     // -------- DISPLAY SINGLE POST --------
     function displayPost(post) {
         const typeLabels = {
             'help-needed': '🆘 Help Needed',
-            'help-offered': '🤲 Help Offered',
             'lost': '😢 Lost Item',
             'found': '🎉 Found Item'
         };
@@ -141,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
         postsContainer.appendChild(postCard);
     }
 
+    // -------- ESCAPE HTML (Security) --------
     function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;

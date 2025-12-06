@@ -5,39 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community Help & Lost+Found</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
     <div class="container">
-        
-        
-            <div class="left">
-                <p class="Main">
-                    Help hub</p>
-         <p class="list">Dashboard</p>
-           <p class="list">Help Needed </p>  
-<p class="list"></p>
-             <p class="list"></p>
-               <p class="list"></p>
-
-            </div>
-            <div class="right">
- <div class="main">
-    <p class="title">Community Help & Lost+Found</p>
-       <p class="title">Category</p>
-          
- </div>
+      
+        <header>
+            <h1>🤝Community Help & Lost+Found</h1>
             <p>Connect with your local community</p>
-       
+        </header>
 
-        <!-- CREATE POST FORM -->
+       <button id="btn">Create a Post</button>
         <section class="form-section">
-            <button id="btn">POST</button>
+          
             <form id="postForm">
                 <div class="form-group">
-                    <label>Post Type:</label>
-                    <select id="type" required>
+                    <div class="form-header" style="overflow:hidden; padding-top:4px;">
+                        <label style="float:left; margin:0;">Post Type:</label>
+                        <button type="button" id="closeForm" title="Close" style="float:right;background:none;border:none;font-size:20px;line-height:1;cursor:pointer;" >✖</button>
+                    </div>
+                    <select id="type" required> 
                         <option value="help-needed">🆘 Help Needed</option>
-                        <option value="help-offered">🤲 Help Offered</option>
                         <option value="lost">😢 Lost Item</option>
                         <option value="found">🎉 Found Item</option>
                     </select>
@@ -56,13 +44,12 @@
                         <option value="Ward 8">Ward 8</option>
                         <option value="Ward 9">Ward 9</option>
                         <option value="Ward 10">Ward 10</option>
-                        <option value="Ward 11">Ward 11</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label>Title:</label>
-                    <input type="text" id="title" placeholder="e.g., Need a painter" required>
+                    <input type="text" id="title" placeholder="e.g., Need a plumber" required>
                 </div>
 
                 <div class="form-group">
@@ -72,12 +59,12 @@
 
                 <div class="form-group">
                     <label>Your Name:</label>
-                    <input type="text" id="contactName" placeholder="Bishwas Ghimire" required>
+                    <input type="text" id="contactName" placeholder="John Doe" required>
                 </div>
 
                 <div class="form-group">
                     <label>Contact Phone:</label>
-                    <input type="tel" id="contactPhone" placeholder="980000000" required>
+                    <input type="tel" id="contactPhone" placeholder="9876543210" required>
                 </div>
 
                 <button type="submit" class="btn-submit">📤 Post</button>
@@ -91,7 +78,6 @@
                 <select id="filterType">
                     <option value="all">All Types</option>
                     <option value="help-needed">🆘 Help Needed</option>
-                    <option value="help-offered">🤲 Help Offered</option>
                     <option value="lost">😢 Lost</option>
                     <option value="found">🎉 Found</option>
                 </select>
@@ -117,12 +103,10 @@
         </section>
     </div>
 
-            </div>
-           
+    
+    <script type="module" src="app.js"></script>
+    
 
-   
-    <script type="module" src="app.js">
-
-    </script>
-</body>  
+    
+</body>
 </html>
