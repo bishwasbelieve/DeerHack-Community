@@ -6,181 +6,150 @@
     <title>Community Help & Lost+Found</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
+     
 </head>
-<div class="container">
-  
-    <header>
-        <h1>🤝Community Help & Lost+Found</h1>
-        <p>Connect with your local community</p>
-    </header>
+<body>
 
-   <button id="btn">Create a Post</button>
-    <section class="form-section">
-      
-        <form id="postForm" novalidate>
-        <div class="form-group">
-        <div class="form-header" style="overflow:hidden; padding-top:4px;">
-        <label style="float:left; margin:0;">Post Type:</label>
-        <button type="button" id="closeForm" title="Close" style="float:right;background:none;border:none;font-size:20px;line-height:1;cursor:pointer;" >✖</button>
-        </div>
-        <select id="type" required> 
-        <option value="">-- Select Type --</option>
-        <option value="help-needed">🆘 Help Needed</option>
-        <option value="lost">😢 Lost Item</option>
-        <option value="found">🎉 Found Item</option>
-        </select>
-        <span class="error-message" id="typeError"></span>
-        </div>
-
-        <div class="form-group">
-        <label>Area/Ward:</label>
-        <select id="area" required>
-        <option value="">-- Select Ward --</option>
-        <option value="Ward 1">Ward 1</option>
-        <option value="Ward 2">Ward 2</option>
-        <option value="Ward 3">Ward 3</option>
-        <option value="Ward 4">Ward 4</option>
-        <option value="Ward 5">Ward 5</option>
-        <option value="Ward 6">Ward 6</option>
-        <option value="Ward 7">Ward 7</option>
-        <option value="Ward 8">Ward 8</option>
-        <option value="Ward 9">Ward 9</option>
-        <option value="Ward 10">Ward 10</option>
-        </select>
-        <span class="error-message" id="areaError"></span>
-        </div>
-
-        <div class="form-group">
-        <label>Title:</label>
-        <input type="text" id="title" placeholder="e.g., Need a plumber" required minlength="3" maxlength="100">
-        <span class="error-message" id="titleError"></span>
-        </div>
-
-        <div class="form-group">
-        <label>Description:</label>
-        <textarea id="description" rows="4" placeholder="Provide details..." required minlength="10" maxlength="500"></textarea>
-        <span class="error-message" id="descriptionError"></span>
-        </div>
-
-        <div class="form-group">
-        <label>Your Name:</label>
-        <input type="text" id="contactName" placeholder="John Doe" required minlength="2" maxlength="50">
-        <span class="error-message" id="contactNameError"></span>
-        </div>
-
-        <div class="form-group">
-        <label>Contact Phone:</label>
-        <input type="text" id="contactPhone" placeholder="9876543210" required pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
-        <span class="error-message" id="contactPhoneError"></span>
-        </div>
-
-        <button type="submit" class="btn-submit">📤 Post</button>
-        </form>
-
-        <script>
-        (function(){
-        const typeSelect = document.getElementById('type');
-        const titleInput = document.getElementById('title');
-        const postForm = document.getElementById('postForm');
-        const phoneInput = document.getElementById('contactPhone');
-
-        function updateTitlePlaceholder() {
-        if (!typeSelect || !titleInput) return;
-        const label = titleInput.previousElementSibling;
-        if (typeSelect.value === 'lost') {
-            titleInput.placeholder = 'Name the item(s) you lost';
-            if (label) label.textContent = 'Item Name:';
-        } else if (typeSelect.value === 'found') {
-            titleInput.placeholder = 'Name the item(s) you found';
-            if (label) label.textContent = 'Item Name:';
-        } else {
-            titleInput.placeholder = 'e.g., Need a plumber';
-            if (label) label.textContent = 'Title:';
-        }
-        }
-
-        function validateForm(e) {
-            e.preventDefault();
-            let isValid = true;
-            const fields = ['type', 'area', 'title', 'description', 'contactName', 'contactPhone'];
+    <!-- LOGIN/SIGNUP MODAL -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <h2 id="authTitle">🔐 Login to Continue</h2>
+            <p class="auth-subtitle">Connect with your local community</p>
             
-            fields.forEach(fieldId => {
-            const field = document.getElementById(fieldId);
-            const errorSpan = document.getElementById(fieldId + 'Error');
-            
-            if (!field.value || !field.value.trim()) {
-                isValid = false;
-                if (errorSpan) errorSpan.textContent = 'This field is required';
-            } else if (fieldId === 'title' && field.value.trim().length < 3) {
-                isValid = false;
-                if (errorSpan) errorSpan.textContent = 'Title must be at least 3 characters';
-            } else if (fieldId === 'description' && field.value.trim().length < 10) {
-                isValid = false;
-                if (errorSpan) errorSpan.textContent = 'Description must be at least 10 characters';
-            } else if (fieldId === 'contactName' && field.value.trim().length < 2) {
-                isValid = false;
-                if (errorSpan) errorSpan.textContent = 'Name must be at least 2 characters';
-            } else {
-                if (errorSpan) errorSpan.textContent = '';
-            }
-            });
+            <form id="authForm">
+                <!-- NAME FIELDS (Only shown during signup) -->
+                <div id="nameFields" style="display: none;">
+                    <div class="form-group">
+                        <label>First Name:</label>
+                        <input type="text" id="firstName" placeholder="John">
+                    </div>
 
-            if (isValid) {
-                postForm.submit();
-            }
-        }
+                    <div class="form-group">
+                        <label>Last Name:</label>
+                        <input type="text" id="lastName" placeholder="Doe">
+                    </div>
+                </div>
 
-            if (isValid) {
-                postForm.submit();
-            }
-        }
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="authEmail" placeholder="you@example.com" required>
+                </div>
 
-        phoneInput && phoneInput.addEventListener('input', function(e) {
-            e.target.value = e.target.value.replace(/[^\d]/g, '');
-        });
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="authPassword" placeholder="Min 6 characters" required>
+                </div>
 
-        document.addEventListener('DOMContentLoaded', updateTitlePlaceholder);
-        typeSelect && typeSelect.addEventListener('change', updateTitlePlaceholder);
-        postForm && postForm.addEventListener('submit', validateForm);
-        })();
-        </script>
-    </section>
+                <button type="submit" class="btn-auth" id="authSubmitBtn">Login</button>
+            </form>
 
-    <!-- FILTER SECTION -->
-    <section class="filter-section">
-        <h2>Browse Posts</h2>
-        <div class="filters">
-            <select id="filterType">
-                <option value="all">All Types</option>
-                <option value="help-needed">🆘 Help Needed</option>
-                <option value="lost">😢 Lost</option>
-                <option value="found">🎉 Found</option>
-            </select>
-
-            <select id="filterArea">
-                <option value="all">All Areas</option>
-                <option value="Ward 1">Ward 1</option>
-                <option value="Ward 2">Ward 2</option>
-                <option value="Ward 3">Ward 3</option>
-                <option value="Ward 4">Ward 4</option>
-                <option value="Ward 5">Ward 5</option>
-            </select>
-
-            <button id="applyFilter" class="btn-filter">🔍 Filter</button>
+            <p class="auth-toggle">
+                <span id="authToggleText">Don't have an account?</span>
+                <a href="#" id="authToggleLink">Sign Up</a>
+            </p>
         </div>
-    </section>
+    </div>
 
-    <!-- POSTS DISPLAY -->
-    <section class="posts-section">
-        <div id="postsContainer">
-            <p class="loading">Loading posts...</p>
+    <div class="container" id="mainApp" style="display: none;">
+        <!-- USER INFO BAR -->
+        <div class="user-bar">
+            <span id="userInfo">Loading...</span>
+            <button id="logoutBtn" class="btn-logout">🚪 Logout</button>
         </div>
-    </section>
-</div>
 
+        <!-- HEADER -->
+        <header>
+            <h1>🤝 Community Help & Lost+Found</h1>
+            <p>Connect with your local community</p>
+        </header>
 
-<script type="module" src="app.js"></script>
+        <!-- CREATE POST FORM -->
+        <section class="form-section">
+            <h2>Create a Post</h2>
+            <form id="postForm">
+                <div class="form-group">
+                    <label>Post Type:</label>
+                    <select id="type" required>
+                        <option value="help-needed">🆘 Help Needed</option>
+                        <option value="lost">😢 Lost Item</option>
+                        <option value="found">🎉 Found Item</option>
+                    </select>
+                </div>
 
+                <div class="form-group">
+                    <label>Area/Ward:</label>
+                    <select id="area" required>
+                        <option value="Ward 1">Ward 1</option>
+                        <option value="Ward 2">Ward 2</option>
+                        <option value="Ward 3">Ward 3</option>
+                        <option value="Ward 4">Ward 4</option>
+                        <option value="Ward 5">Ward 5</option>
+                        <option value="Ward 6">Ward 6</option>
+                        <option value="Ward 7">Ward 7</option>
+                        <option value="Ward 8">Ward 8</option>
+                        <option value="Ward 9">Ward 9</option>
+                        <option value="Ward 10">Ward 10</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Title:</label>
+                    <input type="text" id="title" placeholder="e.g., Need a plumber" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Description:</label>
+                    <textarea id="description" rows="4" placeholder="Provide details..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Your Name:</label>
+                    <input type="text" id="contactName" placeholder="John Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Contact Phone:</label>
+                    <input type="tel" id="contactPhone" placeholder="9876543210" required>
+                </div>
+
+                <button type="submit" class="btn-submit">📤 Post</button>
+            </form>
+        </section>
+
+        <!-- FILTER SECTION -->
+        <section class="filter-section">
+            <h2>Browse Posts</h2>
+            <div class="filters">
+                <select id="filterType">
+                    <option value="all">All Types</option>
+                    <option value="help-needed">🆘 Help Needed</option>
+                    <option value="lost">😢 Lost</option>
+                    <option value="found">🎉 Found</option>
+                </select>
+
+                <select id="filterArea">
+                    <option value="all">All Areas</option>
+                    <option value="Ward 1">Ward 1</option>
+                    <option value="Ward 2">Ward 2</option>
+                    <option value="Ward 3">Ward 3</option>
+                    <option value="Ward 4">Ward 4</option>
+                    <option value="Ward 5">Ward 5</option>
+                </select>
+
+                <button id="applyFilter" class="btn-filter">🔍 Filter</button>
+            </div>
+        </section>
+
+        <!-- POSTS DISPLAY -->
+        <section class="posts-section">
+            <div id="postsContainer">
+                <p class="loading">Loading posts...</p>
+            </div>
+        </section>
+    </div>
+<script>
     
+</script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>

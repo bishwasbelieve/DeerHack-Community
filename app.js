@@ -3,12 +3,22 @@ import {
   getFirestore,
   collection,
   addDoc,
-  getDocs,  // ⬅️ ADDED: You were using this but didn't import it!
+  deleteDoc,
+  doc,
+  setDoc,
+  getDoc,
   query,
   orderBy,
   serverTimestamp,
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
 // -------- FIREBASE CONFIG --------
 const firebaseConfig = {
@@ -22,36 +32,254 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 console.log("✅ Firebase connected");
 
-// -------- DOM ELEMENTS --------
+// Global variables
+let isLoginMode = true;
+let currentUser = null;
+let currentUserData = null;
+let appInitialized = false;
+
+// -------- WAIT FOR DOM TO LOAD --------
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('✅ DOM loaded');
+    
+    // Get DOM elements
+    const authModal = document.getElementById('authModal');
+    const mainApp = document.getElementById('mainApp');
+    const authForm = document.getElementById('authForm');
+    const authEmail = document.getElementById('authEmail');
+    const authPassword = document.getElementById('authPassword');
+    const firstNameInput = document.getElementById('firstName');
+    const lastNameInput = document.getElementById('lastName');
+    const nameFields = document.getElementById('nameFields');
+    const authSubmitBtn = document.getElementById('authSubmitBtn');
+    const authTitle = document.getElementById('authTitle');
+    const authToggleText = document.getElementById('authToggleText');
+    const authToggleLink = document.getElementById('authToggleLink');
+    const userInfoDisplay = document.getElementById('userInfo');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // Check if all elements exist
+    if (!authModal || !authForm || !authToggleLink) {
+        console.error('❌ Some DOM elements are missing!');
+        return;
+    }
+
+    console.log('✅ All DOM elements found');
+
+    // -------- AUTH STATE LISTENER --------
+    onAuthStateChanged(auth, async (user) => {
+        console.log('🔄 Auth state changed:', user ? user.email : 'No user');
+        
+        if (user) {
+            // User is logged in
+            currentUser = user;
+            console.log('✅ User logged in:', user.email);
+            
+            // Fetch user data from Firestore
+            try {
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists()) {
+                    currentUserData = userDoc.data();
+                    userInfoDisplay.textContent = `${currentUserData.firstName} ${currentUserData.lastName} (${user.email})`;
+                    console.log('✅ User data loaded:', currentUserData);
+                } else {
+                    currentUserData = null;
+                    userInfoDisplay.textContent = user.email;
+                    console.log('⚠️ No user data found in Firestore');
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                currentUserData = null;
+                userInfoDisplay.textContent = user.email;
+            }
+            
+            // Show main app, hide auth modal
+            authModal.style.display = 'none';
+            mainApp.style.display = 'block';
+            
+            // Initialize app only once
+            if (!appInitialized) {
+                initializeMainApp();
+                appInitialized = true;
+            }
+        } else {
+            // User is logged out
+            currentUser = null;
+            currentUserData = null;
+            console.log('❌ User logged out');
+            
+            // Show auth modal, hide main app
+            authModal.style.display = 'flex';
+            mainApp.style.display = 'none';
+        }
+    });
+
+    // -------- TOGGLE LOGIN/SIGNUP --------
+    authToggleLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('🔄 Toggle clicked, current mode:', isLoginMode ? 'Login' : 'Signup');
+        
+        isLoginMode = !isLoginMode;
+        
+        if (isLoginMode) {
+            // Switch to LOGIN mode
+            authTitle.textContent = '🔐 Login to Continue';
+            authSubmitBtn.textContent = 'Login';
+            authToggleText.textContent = "Don't have an account?";
+            authToggleLink.textContent = 'Sign Up';
+            nameFields.style.display = 'none';
+            firstNameInput.required = false;
+            lastNameInput.required = false;
+            console.log('✅ Switched to LOGIN mode');
+        } else {
+            // Switch to SIGNUP mode
+            authTitle.textContent = '📝 Create Account';
+            authSubmitBtn.textContent = 'Sign Up';
+            authToggleText.textContent = 'Already have an account?';
+            authToggleLink.textContent = 'Login';
+            nameFields.style.display = 'block';
+            firstNameInput.required = true;
+            lastNameInput.required = true;
+            console.log('✅ Switched to SIGNUP mode');
+        }
+    });
+
+    // -------- AUTH FORM SUBMIT --------
+    authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        console.log('📝 Form submitted, mode:', isLoginMode ? 'Login' : 'Signup');
+        
+        const email = authEmail.value.trim();
+        const password = authPassword.value;
+        const firstName = firstNameInput.value.trim();
+        const lastName = lastNameInput.value.trim();
+        
+        if (!email || !password) {
+            alert('❌ Please fill in all fields');
+            return;
+        }
+        
+        if (!isLoginMode && (!firstName || !lastName)) {
+            alert('❌ Please enter your first and last name');
+            return;
+        }
+        
+        if (password.length < 6) {
+            alert('❌ Password must be at least 6 characters');
+            return;
+        }
+        
+        authSubmitBtn.disabled = true;
+        authSubmitBtn.textContent = '⏳ Please wait...';
+        
+        try {
+            if (isLoginMode) {
+                // LOGIN
+                console.log('🔑 Attempting login for:', email);
+                await signInWithEmailAndPassword(auth, email, password);
+                console.log('✅ Login successful');
+            } else {
+                // SIGNUP
+                console.log('📝 Attempting signup for:', email);
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                console.log('✅ Signup successful');
+                
+                // Save user data to Firestore
+                await setDoc(doc(db, 'users', userCredential.user.uid), {
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    createdAt: serverTimestamp()
+                });
+                console.log('✅ User data saved to Firestore');
+            }
+            
+            authForm.reset();
+            
+        } catch (error) {
+            console.error('❌ Auth error:', error);
+            
+            // User-friendly error messages
+            if (error.code === 'auth/email-already-in-use') {
+                alert('❌ This email is already registered. Try logging in instead.');
+                isLoginMode = true;
+                authTitle.textContent = '🔐 Login to Continue';
+                authSubmitBtn.textContent = 'Login';
+                authToggleText.textContent = "Don't have an account?";
+                authToggleLink.textContent = 'Sign Up';
+                nameFields.style.display = 'none';
+                firstNameInput.required = false;
+                lastNameInput.required = false;
+            } else if (error.code === 'auth/invalid-email') {
+                alert('❌ Invalid email address.');
+            } else if (error.code === 'auth/wrong-password') {
+                alert('❌ Wrong password.');
+            } else if (error.code === 'auth/user-not-found') {
+                alert('❌ No account found with this email. Please sign up first.');
+                isLoginMode = false;
+                authTitle.textContent = '📝 Create Account';
+                authSubmitBtn.textContent = 'Sign Up';
+                authToggleText.textContent = 'Already have an account?';
+                authToggleLink.textContent = 'Login';
+                nameFields.style.display = 'block';
+                firstNameInput.required = true;
+                lastNameInput.required = true;
+            } else if (error.code === 'auth/weak-password') {
+                alert('❌ Password too weak. Use at least 6 characters.');
+            } else if (error.code === 'auth/invalid-credential') {
+                alert('❌ Invalid email or password.');
+            } else {
+                alert('❌ Error: ' + error.message);
+            }
+        } finally {
+            authSubmitBtn.disabled = false;
+            authSubmitBtn.textContent = isLoginMode ? 'Login' : 'Sign Up';
+        }
+    });
+
+    // -------- LOGOUT --------
+    logoutBtn.addEventListener('click', async () => {
+        console.log('🚪 Logout clicked');
+        try {
+            await signOut(auth);
+            console.log('✅ Logged out successfully');
+            appInitialized = false;
+        } catch (error) {
+            console.error('❌ Logout error:', error);
+            alert('❌ Logout failed');
+        }
+    });
+});
+
+// -------- MAIN APP INITIALIZATION --------
+function initializeMainApp() {
+    console.log('🚀 Initializing main app');
+    
     const postForm = document.getElementById('postForm');
     const postsContainer = document.getElementById('postsContainer');
     const filterTypeSelect = document.getElementById('filterType');
     const filterAreaSelect = document.getElementById('filterArea');
     const applyFilterBtn = document.getElementById('applyFilter');
-    const form=document.getElementById('form-section');
-    const btn=document.getElementById('btn');
-  const closeFormBtn=document.getElementById('closeForm');
-    closeFormBtn.addEventListener('click',()=>{
-        postForm.style.display="none";
-    });
-    //form-status
-    postForm.style.display="none";
-btn.addEventListener('click',()=>{
-   postForm.style.display="block";
-});
-    // Store filter state
+
     let currentFilterType = 'all';
     let currentFilterArea = 'all';
-    
-    // Store all posts for filtering
     let allPosts = [];
 
     // -------- SUBMIT POST --------
     postForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        if (!currentUser) {
+            alert('❌ You must be logged in to post');
+            return;
+        }
+        
+        const submitBtn = postForm.querySelector('.btn-submit');
+        submitBtn.disabled = true;
+        submitBtn.textContent = '⏳ Posting...';
         
         const type = document.getElementById('type').value;
         const area = document.getElementById('area').value;
@@ -59,16 +287,6 @@ btn.addEventListener('click',()=>{
         const description = document.getElementById('description').value;
         const contactName = document.getElementById('contactName').value;
         const contactPhone = document.getElementById('contactPhone').value;
-
-        // Validate all fields are filled
-        if (!type || !area || !title || !description || !contactName || !contactPhone) {
-            alert('❌ Please fill in all fields before posting.');
-            return;
-        }
-
-        const submitBtn = postForm.querySelector('.btn-submit');
-        submitBtn.disabled = true;
-        submitBtn.textContent = '⏳ Posting...';
 
         try {
             await addDoc(collection(db, 'posts'), {
@@ -78,12 +296,14 @@ btn.addEventListener('click',()=>{
                 description: description,
                 contactName: contactName,
                 contactPhone: contactPhone,
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                userName: currentUserData ? `${currentUserData.firstName} ${currentUserData.lastName}` : 'User',
                 timestamp: serverTimestamp()
             });
             
             alert('✅ Post created successfully!');
             postForm.reset();
-            postForm.style.display="none";
             
         } catch (error) {
             console.error('Error adding post:', error);
@@ -102,12 +322,44 @@ btn.addEventListener('click',()=>{
         renderFilteredPosts();
     });
 
+    // -------- DELETE POST FUNCTION --------
+    async function deletePost(postId) {
+        console.log('🗑️ DELETE FUNCTION CALLED!');
+        console.log('Post ID:', postId);
+        console.log('Current User:', currentUser);
+        
+        if (!currentUser) {
+            alert('❌ You must be logged in to delete posts');
+            return;
+        }
+        
+        const confirmed = confirm('⚠️ Are you sure you want to delete this post?\n\nThis action cannot be undone.');
+        
+        if (!confirmed) {
+            console.log('❌ Delete cancelled by user');
+            return;
+        }
+        
+        console.log('🔄 Attempting to delete post from Firestore...');
+        
+        try {
+            await deleteDoc(doc(db, 'posts', postId));
+            console.log('✅ Post deleted successfully:', postId);
+            alert('✅ Post deleted successfully!');
+        } catch (error) {
+            console.error('❌ Error deleting post:', error);
+            console.error('Error code:', error.code);
+            console.error('Error message:', error.message);
+            alert('❌ Failed to delete post: ' + error.message);
+        }
+    }
+
     // -------- REALTIME LISTENER --------
     const postsQuery = query(collection(db, 'posts'), orderBy('timestamp', 'desc'));
     
     onSnapshot(postsQuery, (snapshot) => {
-        console.log('📡 Real-time update received');
-        allPosts = []; // Clear array
+        console.log('📡 Real-time update received, posts count:', snapshot.size);
+        allPosts = [];
         
         snapshot.forEach((doc) => {
             allPosts.push({
@@ -118,7 +370,7 @@ btn.addEventListener('click',()=>{
         
         renderFilteredPosts();
     }, (error) => {
-        console.error('Error in real-time listener:', error);
+        console.error('❌ Error in real-time listener:', error);
         postsContainer.innerHTML = '<p class="loading">❌ Connection error. Refresh page.</p>';
     });
 
@@ -131,7 +383,6 @@ btn.addEventListener('click',()=>{
             return;
         }
 
-        // Apply filters
         const filteredPosts = allPosts.filter(post => {
             const typeMatch = currentFilterType === 'all' || post.type === currentFilterType;
             const areaMatch = currentFilterArea === 'all' || post.area === currentFilterArea;
@@ -139,11 +390,10 @@ btn.addEventListener('click',()=>{
         });
 
         if (filteredPosts.length === 0) {
-            postsContainer.innerHTML = '<p class="loading">No posts match your filters. Try different options.</p>';
+            postsContainer.innerHTML = '<p class="loading">No posts match your filters.</p>';
             return;
         }
 
-        // Display filtered posts
         filteredPosts.forEach(post => {
             displayPost(post);
         });
@@ -172,11 +422,15 @@ btn.addEventListener('click',()=>{
 
         const postCard = document.createElement('div');
         postCard.className = `post-card ${post.type}`;
+        
+        const isOwnPost = currentUser && post.userId === currentUser.uid;
+        
         postCard.innerHTML = `
             <div class="post-header">
                 <span class="post-type">${typeLabels[post.type]}</span>
                 <span class="post-area">${post.area}</span>
             </div>
+            ${isOwnPost ? '<span class="own-post-badge">📌 Your Post</span>' : ''}
             <h3 class="post-title">${escapeHtml(post.title)}</h3>
             <p class="post-description">${escapeHtml(post.description)}</p>
             <div class="post-contact">
@@ -184,13 +438,32 @@ btn.addEventListener('click',()=>{
             </div>
             <p class="post-time">Posted: ${timeString}</p>
         `;
+        
+        // Add delete button if it's user's own post
+        if (isOwnPost) {
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn-delete';
+            deleteBtn.textContent = '🗑️ Delete Post';
+            
+            // Add click handler with detailed logging
+            deleteBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🖱️ DELETE BUTTON CLICKED!');
+                console.log('Deleting post ID:', post.id);
+                await deletePost(post.id);
+            });
+            
+            postCard.appendChild(deleteBtn);
+            console.log('✅ Delete button added for post:', post.id);
+        }
+        
         postsContainer.appendChild(postCard);
     }
 
-    // -------- ESCAPE HTML (Security) --------
     function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
-});
+}

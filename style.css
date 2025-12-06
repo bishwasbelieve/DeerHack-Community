@@ -16,6 +16,130 @@ body {
     margin: 0 auto;
 }
 
+/* ==================== AUTH MODAL ==================== */
+.modal {
+    display: flex;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-content h2 {
+    color: #667eea;
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
+
+.auth-subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+}
+
+.btn-auth {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+    margin-top: 10px;
+}
+
+.btn-auth:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+.btn-auth:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.auth-toggle {
+    text-align: center;
+    margin-top: 20px;
+    color: #666;
+}
+
+.auth-toggle a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 5px;
+}
+
+.auth-toggle a:hover {
+    text-decoration: underline;
+}
+
+/* ==================== USER BAR ==================== */
+.user-bar {
+    background: white;
+    padding: 15px 25px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.user-bar span {
+    color: #667eea;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.btn-logout {
+    padding: 8px 20px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-logout:hover {
+    background: #c0392b;
+}
+
 /* ==================== HEADER ==================== */
 header {
     background: white;
@@ -177,6 +301,7 @@ header p {
     border-left: 5px solid #667eea;
     transition: transform 0.2s, box-shadow 0.2s;
     box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+    position: relative;
 }
 
 .post-card:hover {
@@ -184,7 +309,6 @@ header p {
     box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
 }
 
-/* Different colors for different post types */
 .post-card.help-needed {
     border-left-color: #e74c3c;
 }
@@ -195,6 +319,17 @@ header p {
 
 .post-card.found {
     border-left-color: #3498db;
+}
+
+.own-post-badge {
+    display: inline-block;
+    background: #667eea;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 10px;
 }
 
 .post-header {
@@ -211,19 +346,6 @@ header p {
     font-size: 1.1rem;
     color: #333;
 }
-
-#btn{
-    margin-bottom:20px;
-    padding:10px 15px;
-    background:#667eea;
-    color:white;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    font-size:1rem;
-    font-weight:600;
-}
-
 
 .post-area {
     background: #667eea;
@@ -264,6 +386,27 @@ header p {
     color: #999;
     font-size: 0.85rem;
     font-style: italic;
+    margin-bottom: 10px;
+}
+
+/* ==================== DELETE BUTTON ==================== */
+.btn-delete {
+    width: 100%;
+    padding: 10px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    margin-top: 10px;
+}
+
+.btn-delete:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
 }
 
 /* ==================== LOADING STATE ==================== */
@@ -278,6 +421,20 @@ header p {
 @media (max-width: 600px) {
     body {
         padding: 10px;
+    }
+    
+    .modal-content {
+        padding: 30px 20px;
+    }
+    
+    .user-bar {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .btn-logout {
+        width: 100%;
     }
     
     header h1 {
