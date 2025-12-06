@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Help & Lost+Found</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        
+        
+            <div class="left">
+                <p class="Main">Help hub</p>
+         <p class="list">Dashboard</p>
+           <p class="list">Help Needed </p>  
+<p class="list"></p>
+             <p class="list"></p>
+               <p class="list"></p>
+
+            </div>
+            <div class="right">
+ <h1>🤝Community Help & Lost+Found</h1>
+            <p>Connect with your local community</p>
+       
+
+        <!-- CREATE POST FORM -->
+        <section class="form-section">
+            <button id="togg
+            <form id="postForm">
+                <div class="form-group">
+                    <label>Post Type:</label>
+                    <select id="type" required>
+                        <option value="help-needed">🆘 Help Needed</option>
+                        <option value="help-offered">🤲 Help Offered</option>
+                        <option value="lost">😢 Lost Item</option>
+                        <option value="found">🎉 Found Item</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Area/Ward:</label>
+                    <select id="area" required>
+                        <option value="Ward 1">Ward 1</option>
+                        <option value="Ward 2">Ward 2</option>
+                        <option value="Ward 3">Ward 3</option>
+                        <option value="Ward 4">Ward 4</option>
+                        <option value="Ward 5">Ward 5</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Title:</label>
+                    <input type="text" id="title" placeholder="e.g., Need a plumber" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Description:</label>
+                    <textarea id="description" rows="4" placeholder="Provide details..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Your Name:</label>
+                    <input type="text" id="contactName" placeholder="John Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Contact Phone:</label>
+                    <input type="tel" id="contactPhone" placeholder="9876543210" required>
+                </div>
+
+                <button type="submit" class="btn-submit">📤 Post</button>
+            </form>
+        </section>
+
+        <!-- FILTER SECTION -->
+        <section class="filter-section">
+            <h2>Browse Posts</h2>
+            <div class="filters">
+                <select id="filterType">
+                    <option value="all">All Types</option>
+                    <option value="help-needed">🆘 Help Needed</option>
+                    <option value="help-offered">🤲 Help Offered</option>
+                    <option value="lost">😢 Lost</option>
+                    <option value="found">🎉 Found</option>
+                </select>
+
+                <select id="filterArea">
+                    <option value="all">All Areas</option>
+                    <option value="Ward 1">Ward 1</option>
+                    <option value="Ward 2">Ward 2</option>
+                    <option value="Ward 3">Ward 3</option>
+                    <option value="Ward 4">Ward 4</option>
+                    <option value="Ward 5">Ward 5</option>
+                </select>
+
+                <button id="applyFilter" class="btn-filter">🔍 Filter</button>
+            </div>
+        </section>
+
+        <!-- POSTS DISPLAY -->
+        <section class="posts-section">
+            <div id="postsContainer">
+                <p class="loading">Loading posts...</p>
+            </div>
+        </section>
+    </div>
+
+            </div>
+           
+
+    <!-- FIREBASE SDK (Version 9 - Modular) -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>

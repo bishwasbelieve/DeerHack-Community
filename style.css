@@ -1,0 +1,10 @@
+body { font-family: sans-serif; max-width: 500px; margin: auto; padding: 10px; }
+form, #posts { margin-bottom: 20px; }
+input, select, textarea { display: block; margin: 5px 0 10px 0; width: 100%; }
+.post { border: 1px solid #bbb; padding: 10px; margin-bottom: 10px; background: #f9f9f9; }
+
+
+
+.container {
+  display: flex;
+}
