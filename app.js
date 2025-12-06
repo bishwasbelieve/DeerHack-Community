@@ -53,16 +53,22 @@ btn.addEventListener('click',()=>{
     postForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        const submitBtn = postForm.querySelector('.btn-submit');
-        submitBtn.disabled = true;
-        submitBtn.textContent = '⏳ Posting...';
-        
         const type = document.getElementById('type').value;
         const area = document.getElementById('area').value;
         const title = document.getElementById('title').value;
         const description = document.getElementById('description').value;
         const contactName = document.getElementById('contactName').value;
         const contactPhone = document.getElementById('contactPhone').value;
+
+        // Validate all fields are filled
+        if (!type || !area || !title || !description || !contactName || !contactPhone) {
+            alert('❌ Please fill in all fields before posting.');
+            return;
+        }
+
+        const submitBtn = postForm.querySelector('.btn-submit');
+        submitBtn.disabled = true;
+        submitBtn.textContent = '⏳ Posting...';
 
         try {
             await addDoc(collection(db, 'posts'), {
@@ -77,6 +83,7 @@ btn.addEventListener('click',()=>{
             
             alert('✅ Post created successfully!');
             postForm.reset();
+            postForm.style.display="none";
             
         } catch (error) {
             console.error('Error adding post:', error);
