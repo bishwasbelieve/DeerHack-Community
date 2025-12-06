@@ -5,19 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community Help & Lost+Found</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
     <div class="container">
-      
-        <header>
-            <h1>🤝Community Help & Lost+Found</h1>
-            <p>Connect with your local community</p>
-        </header>
+        
+        
+            <div class="left">
+                <p class="Main">
+                    Help hub</p>
+         <p class="list">Dashboard</p>
+           <p class="list">Help Needed </p>  
+<p class="list"></p>
+             <p class="list"></p>
+               <p class="list"></p>
 
-     
+            </div>
+            <div class="right">
+ <div class="main">
+    <p class="title">Community Help & Lost+Found</p>
+       <p class="title">Category</p>
+          
+ </div>
+            <p>Connect with your local community</p>
+       
+
+        <!-- CREATE POST FORM -->
         <section class="form-section">
-            <h2>Create a Post</h2>
+            <button id="btn">POST</button>
             <form id="postForm">
                 <div class="form-group">
                     <label>Post Type:</label>
@@ -42,12 +56,13 @@
                         <option value="Ward 8">Ward 8</option>
                         <option value="Ward 9">Ward 9</option>
                         <option value="Ward 10">Ward 10</option>
+                        <option value="Ward 11">Ward 11</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label>Title:</label>
-                    <input type="text" id="title" placeholder="e.g., Need a plumber" required>
+                    <input type="text" id="title" placeholder="e.g., Need a painter" required>
                 </div>
 
                 <div class="form-group">
@@ -57,12 +72,12 @@
 
                 <div class="form-group">
                     <label>Your Name:</label>
-                    <input type="text" id="contactName" placeholder="John Doe" required>
+                    <input type="text" id="contactName" placeholder="Bishwas Ghimire" required>
                 </div>
 
                 <div class="form-group">
                     <label>Contact Phone:</label>
-                    <input type="tel" id="contactPhone" placeholder="9876543210" required>
+                    <input type="tel" id="contactPhone" placeholder="980000000" required>
                 </div>
 
                 <button type="submit" class="btn-submit">📤 Post</button>
@@ -102,10 +117,12 @@
         </section>
     </div>
 
-    
-    <script type="module" src="app.js"></script>
-    
+            </div>
+           
 
-    
-</body>
+   
+    <script type="module" src="app.js">
+
+    </script>
+</body>  
 </html>
